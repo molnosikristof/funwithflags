@@ -4,18 +4,25 @@ import subprocess
 app = Flask(__name__)
 
 task_list = []
+cmd_output = {}
+index_counter = 0
 
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
+
 @app.route('/resource', methods = ['POST'])
 def post_methods():
     global task_list
     task_list = task_list + [request.json['command']]
     return str(task_list) + '\n'
+
 @app.route('/cmd', methods = ['POST'])
 def run_command_and_store_output_and_command():
     global task_list
+    global cmd_output
+    global index_counter
+    index_counter += 1
     task_list = task_list + [request.json['command']]
     print(str(task_list) + '\n')
     cmd = request.json['command'].split()
@@ -23,4 +30,13 @@ def run_command_and_store_output_and_command():
                             stderr=subprocess.PIPE,
                             stdin=subprocess.PIPE)
     out,err = p.communicate()
-    return str(task_list) + '\n'
+    cmd_output[index_counter] = out
+    print(str(cmd_output) + '\n')
+    return '200 OK'
+@app.route('/tasklist', methods = ['GET'])
+def list_tasks():
+    return str(task_list)
+@app.route('/spectask/<id>', methods = ['GET'])
+def specific_task(id):
+    print(id)
+    return str(cmd_output[int(id)])
