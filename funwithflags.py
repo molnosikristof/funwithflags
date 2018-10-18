@@ -9,13 +9,7 @@ index_counter = 0
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
-
-@app.route('/resource', methods = ['POST'])
-def post_methods():
-    global task_list
-    task_list = task_list + [request.json['command']]
-    return str(task_list) + '\n'
+    return 'Hello, World! This is fun with flags'
 
 @app.route('/cmd', methods = ['POST'])
 def run_command_and_store_output_and_command():
@@ -32,10 +26,12 @@ def run_command_and_store_output_and_command():
     out,err = p.communicate()
     cmd_output[index_counter] = out
     print(str(cmd_output) + '\n')
-    return '200 OK'
+    return 'Task id:' + str(index_counter) + '\n'
+
 @app.route('/tasklist', methods = ['GET'])
 def list_tasks():
     return str(task_list)
+
 @app.route('/spectask/<id>', methods = ['GET'])
 def specific_task(id):
     print(id)
